@@ -40,28 +40,28 @@ pdeplot(model,'XYData',voltage,'ZData',voltage);
 title('voltage');
 
 %% solve the voltage error PDE
-q_error = q_calc_n - q_des_cont;
-
-model_v = createpde();
-
-geometryFromEdges(model_v,dl);
-pdegplot(model,'EdgeLabels','on');
-
-applyBoundaryCondition(model,'dirichlet','Edge',1,'r',0);
-applyBoundaryCondition(model,'dirichlet','Edge',3,'r',0);
-applyBoundaryCondition(model,'neumann','Edge',[2,4],'g',0);
-
-% divergence of q_error * grad(V)/||grad(V)||^2
-f_coeff = -divergence(q_error*e_field(result,x_in,y_in)/sum(e_field(result,x_in,y_in).*e_field(result,x_in,y_in)));
-
-
-conductance_handle = @(location,state) delta_init_cont(location.x,location.y);
-specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
-
-generateMesh(model);
-
-result_v = solvepde(model);
-
+% q_error = q_calc_n - q_des_cont;
+% 
+% model_v = createpde();
+% 
+% geometryFromEdges(model_v,dl);
+% pdegplot(model,'EdgeLabels','on');
+% 
+% applyBoundaryCondition(model,'dirichlet','Edge',1,'r',0);
+% applyBoundaryCondition(model,'dirichlet','Edge',3,'r',0);
+% applyBoundaryCondition(model,'neumann','Edge',[2,4],'g',0);
+% 
+% % divergence of q_error * grad(V)/||grad(V)||^2
+% f_coeff = -divergence(q_error*e_field(result,x_in,y_in)/sum(e_field(result,x_in,y_in).*e_field(result,x_in,y_in)));
+% 
+% 
+% conductance_handle = @(location,state) delta_init_cont(location.x,location.y);
+% specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
+% 
+% generateMesh(model);
+% 
+% result_v = solvepde(model);
+% 
 
 % syms x_input; 
 % syms y_input;
