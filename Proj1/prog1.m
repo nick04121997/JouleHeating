@@ -44,6 +44,7 @@ q_err = q_n - q_des;
 q_err_cont = fit([x,y],q_err,'linearinterp');
 
 %% solve the voltage error PDE
+f = @(location,state) f_coeff(result,q_err_cont,location.x,location.y);
 % q_error = q_calc_n - q_des_cont;
 % 
 % model_v = createpde();
