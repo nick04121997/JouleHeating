@@ -39,6 +39,10 @@ voltage = result.NodalSolution;
 pdeplot(model,'XYData',voltage,'ZData',voltage);
 title('voltage');
 
+q_n = q_calc(result,x',y',delta_init_cont);
+q_err = q_n - q_des;
+q_err_cont = fit([x,y],q_err,'linearinterp');
+
 %% solve the voltage error PDE
 % q_error = q_calc_n - q_des_cont;
 % 
