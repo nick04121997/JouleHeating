@@ -14,7 +14,9 @@ y = thickness_data(:,2);
 delta_init = thickness_data(:,3);
 q_des = heat_data(:,3);
 
+% q bar
 q_des_cont = fit([x,y],q_des,'linearinterp');
+% delta bar
 delta_init_cont = fit([x,y],delta_init,'linearinterp');
 
 %% create PDE model
@@ -39,13 +41,19 @@ voltage = result.NodalSolution;
 pdeplot(model,'XYData',voltage,'ZData',voltage);
 title('voltage');
 
-q_n = q_calc(result,x',y',delta_init_cont);
+[e_x, e_y] = evaluateGradient(result,x,y);
+e_x_cont = fit([x,y],e_x,'cubicinterp');
+e_y_cont = fit([x,y],e_y,'cubicinterp');
+
+% q calcuated on that iteration 
+q_n = q_calc(result,x',y',delta_init_cont,e_x_cont,e_y_cont);
+% q tilde
 q_err = q_n - q_des;
 q_err_cont = fit([x,y],q_err,'linearinterp');
 
-%% solve the voltage error PDE
-f = @(location,state) f_coeff(result,q_err_cont,location.x,location.y);
-c = @(location,state) c_coeff(result, delta_init_cont, location.x, location.y);
+%% solve the voltage error PDE (v tilde)
+f = @(location,state) f_coeff(result,q_err_cont,e_x_cont,e_y_cont,location.x,location.y);
+c = @(location,state) c_coeff(result, delta_init_cont, location.x, location.y,e_x_cont,e_y_cont);
 
 model_v = createpde();
 
