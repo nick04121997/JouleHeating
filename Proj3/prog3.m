@@ -22,14 +22,56 @@ delta_c = fit([x,y],delta,'linearinterp');
 %% create PDE model
 model = createpde();
 
-geom_descrip = [3;4;0;1;1;0;0;0;1;1;];
+x_bottom = 0.0254*[0 3.622 7.411 11.107 14.724 18.279 21.772 25.214 28.611 32.037 35.463];
+y_bottom = 0.0254*[0 0.815 3.101 5.532 8.081 10.715 13.431 16.211 19.046 22.421 25.795];
+
+x_top = 0.0254*[0 2.712 5.378 7.994 10.566 13.09 15.567 18.005 20.404 22.764 25.09];
+y_top = 0.0254*[20.902 22.085 23.37 24.754 26.217 27.76 29.38 31.057 32.79 34.576 36.404];
+
+
+x_dat = zeros(11,11);
+y_dat = zeros(11,11);
+
+num_slope = y_top - y_bottom;
+den_slope = x_top-x_bottom;
+
+slope = num_slope./den_slope;
+
+for i=1:11
+    if slope(i) == inf
+        slope(i) = 0;
+    else
+    end
+end
+
+b = y_bottom - slope.*x_bottom;
+
+x_diff = x_bottom-x_top;
+
+for i=1:11
+    if x_diff(i) ~= 0
+        x_dat(:,i) = x_top(i):x_diff(i)/10:x_bottom(i)';
+    else
+        x_dat(2:end-1,i) = x_top(i)*ones(9,1);
+    end
+    
+    if slope~=0
+        y_dat(:,i) = slope(i)*x(:,i) + b(i);
+    else
+        y_dat(:,i) = fliplr(y_bottom(i):(y_top(i)-y_bottom(i))/10:y_top(i))';
+    end
+
+end
+
+geom_descrip = [2;22;x_bottom'; flip(x_top');y_bottom';flip(y_top')];
 dl = decsg(geom_descrip);
 geometryFromEdges(model,dl);
+figure(1);
 pdegplot(model,'EdgeLabels','on');
 
-applyBoundaryCondition(model,'dirichlet','Edge',1,'r',-115);
-applyBoundaryCondition(model,'dirichlet','Edge',3,'r',115);
-applyBoundaryCondition(model,'neumann','Edge',[2,4],'g',0);
+applyBoundaryCondition(model,'dirichlet','Edge',[1:1:10],'r',-115);
+applyBoundaryCondition(model,'dirichlet','Edge',[12:1:21],'r',115);
+applyBoundaryCondition(model,'neumann','Edge',[11,22],'g',0);
 
 conductance_handle = @(location,state) delta_c(location.x,location.y);
 specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
@@ -37,6 +79,7 @@ generateMesh(model);
 
 result = solvepde(model);
 voltage = result.NodalSolution;
+figure(2);
 pdeplot(model,'XYData',voltage,'ZData',voltage);
 title('voltage');
 
@@ -44,7 +87,7 @@ title('voltage');
 q_cal = delta.*(e_x.^2+e_y.^2).^2*sigma;
 err = q_cal-q_des;
 err = err.^2;
-err = sum(err);
+err = sum(err)
 
 %% Iterate
 i = 0;
