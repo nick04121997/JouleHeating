@@ -85,27 +85,32 @@ title('voltage');
 
 [e_x, e_y] = evaluateGradient(result,x,y);
 e_x_matrix = reshape(e_x', [11 11]);
-e_y_matrix = reshape(e_y', [11 11]);
+e_y_matrix = reshape(e_x', [11 11]);
 
 for j=1:11
     for k=1:11
         if isnan(e_x_matrix(j,k))
             if j == 1
-                e_x_matrix(j,k) = e_x_matrix(j+1,k);
-                e_y_matrix(j,k) = e_y_matrix(j+1,k);
-            elseif j == 11
-                e_x_matrix(j,k) = e_x_matrix(j-1,k);
-                e_y_matrix(j,k) = e_y_matrix(j-1,k);
+                e_x_matrix(j,k) = e_x
             else
-                e_x_matrix(j,k) = .5*(e_x_matrix(j-1,k) + e_x_matrix(j+1,k));
-                e_y_matrix(j,k) = .5*(e_y_matrix(j-1,k) + e_y_matrix(j+1,k));
-            end
+                
         end
     end
 end
-e_x = reshape(e_x_matrix, [121 1]);
-e_y = reshape(e_y_matrix, [121 1]);
 
+
+% indices = find(isnan(e_dat(:,3)));
+% j=0;
+% for i=1:length(e_dat)
+%     if ismember(i, indices) == 0
+%         j = j + 1;
+%         e_dat_copy(j,:) = e_dat(i,:);
+%         q_des_copy(j,:) = q_des(i,:);
+%         delta_copy(j,:) = delta(i,:);
+%     end
+% end
+% x_copy = e_dat_copy(:,1);
+% y_copy = e_dat_copy(:,2);
 q_cal = delta.*(e_x.^2+e_y.^2).^2*sigma;
 err = q_cal-q_des;
 err = err.^2;
@@ -141,27 +146,6 @@ while (err > tol)
     title('voltage');
     
     [e_x, e_y] = evaluateGradient(result,x,y);
-    e_x_matrix = reshape(e_x', [11 11]);
-    e_y_matrix = reshape(e_y', [11 11]);
-
-    for j=1:11
-        for k=1:11
-            if isnan(e_x_matrix(j,k))
-                if j == 1
-                    e_x_matrix(j,k) = e_x_matrix(j+1,k);
-                    e_y_matrix(j,k) = e_y_matrix(j+1,k);
-                elseif j == 11
-                    e_x_matrix(j,k) = e_x_matrix(j-1,k);
-                    e_y_matrix(j,k) = e_y_matrix(j-1,k);
-                else
-                    e_x_matrix(j,k) = .5*(e_x_matrix(j-1,k) + e_x_matrix(j+1,k));
-                    e_y_matrix(j,k) = .5*(e_y_matrix(j-1,k) + e_y_matrix(j+1,k));
-                end
-            end
-        end
-    end
-    e_x = reshape(e_x_matrix, [121 1]);
-    e_y = reshape(e_y_matrix, [121 1]);
     q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
     err = q_cal-q_des;
     err = err.^2;
