@@ -1,3 +1,8 @@
+%%%%
+% Script for running the MATLAB iterative method for thickness prediction
+% of the Global window geometry
+%%%%
+
 %% Clearing MATLAB workspace and command window, and closing all figures
 clear;
 close all;
