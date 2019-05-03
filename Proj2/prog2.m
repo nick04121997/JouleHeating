@@ -20,8 +20,8 @@ V = 115;
 %% Importing data and preforming interpolation
 % delta_data = initial thickness data
 % heat_data = desired heating data
-delta_data = dlmread('thickness_init.csv',',',1,0);
-heat_data = dlmread('heat_desired.csv',',',1,0);
+delta_data = dlmread('thickness_init.csv',',',0,0);
+heat_data = dlmread('qj_test.csv',',',0,0);
 x = delta_data(:,1);
 y = delta_data(:,2);
 delta = delta_data(:,3);
