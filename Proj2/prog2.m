@@ -63,7 +63,7 @@ title('voltage');
 
 % Calculate joule heating
 [e_x, e_y] = evaluateGradient(result,x,y);
-q_cal = delta.*(e_x.^2+e_y.^2).^2*sigma;
+q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
 err = abs(q_cal-q_des);
 err = mean(err);
 

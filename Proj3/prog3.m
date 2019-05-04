@@ -16,8 +16,8 @@ tol = .5;
 global sigma V; 
 sigma = 1E6;
 V = 115;
-delta_data = dlmread('thickness_init.csv',',',1,0);
-heat_data = dlmread('heat_desired.csv',',',1,0);
+delta_data = dlmread('initial_thickness_global.csv',',',1,0);
+heat_data = dlmread('qj_desired_global.csv',',',1,0);
 x = delta_data(:,1);
 y = delta_data(:,2);
 delta = delta_data(:,3);
@@ -80,9 +80,15 @@ title('voltage');
 delta_mesh = delta_c(x_mesh,y_mesh);
 q_mesh = q_des_c(x_mesh,y_mesh);
 
+remove_nan = or(~isnan(delta_mesh),~isnan(q_mesh));
+delta_mesh = delta_mesh(remove_nan);
+q_mesh = q_mesh(remove_nan);
+x_mesh = x_mesh(remove_nan);
+y_mesh = y_mesh(remove_nan);
+
 % Calculate joule heating
 [e_x, e_y] = evaluateGradient(result,x_mesh,y_mesh);
-q_cal = delta_mesh.*(e_x.^2+e_y.^2).^2*sigma;
+q_cal = delta_mesh.*(e_x.^2+e_y.^2)*sigma;
 
 % Calculate error
 err = abs(q_cal-q_mesh);
@@ -123,8 +129,8 @@ while (abs(err) > tol)
     % Plot solution
     voltage = result.NodalSolution;
     pdeplot(model,'XYData',voltage,'ZData',voltage);
-    title('voltage');
-    
+    title('voltage');   
+
     % Calcuate joule heating 
     [e_x, e_y] = evaluateGradient(result,x_mesh,y_mesh);
     q_cal = delta_mesh.*(e_x.^2+e_y.^2)*sigma;
