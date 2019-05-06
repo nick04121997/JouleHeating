@@ -2,6 +2,8 @@
 model = createpde();
 global sigma; 
 sigma = 1E6;
+global V;
+V = 115;
 
 %% PDE model setup
 model = createpde();
