@@ -93,6 +93,16 @@ while (err > tol)
         axis([0 1 0.8E-8 2.2E-8])
         frame = getframe(gcf);
         writeVideo(v,frame);
+        
+        figure(5);
+        plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
+        set(gca, 'FontSize', 14);
+        ytickformat('%.2f')
+        xlabel('y (m)');
+        ylabel('Thickness (m)');
+        title('Thickness Solution');
+        axis([0 1 0.8E-8 2.2E-8])
+        hold on;
     end
     
     % Resisty updating
@@ -173,6 +183,16 @@ axis([0 1 0.8E-8 2.2E-8])
 frame = getframe(gcf);
 writeVideo(v,frame);
 close(v);
+
+figure(5);
+plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
+set(gca, 'FontSize', 14);
+ytickformat('%.2f')
+xlabel('y (m)');
+ylabel('Thickness (m)');
+title('Thickness Solution');
+axis([0 1 0.8E-8 2.2E-8])
+hold on;
 
 
 
