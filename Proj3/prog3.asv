@@ -13,7 +13,7 @@ clc;
 % tol = error tolerance for terminating iteration
 % sigma = conductivity of material
 % V = voltage applied to the busbars 
-tol = 22;
+tol = .5;
 global sigma V; 
 sigma = 1E6;
 V = 115;
@@ -95,13 +95,11 @@ delta_mesh = delta_c(x_mesh,y_mesh);
 q_mesh = q_des_c(x_mesh,y_mesh);
 
 % Some data processing
-delta_mesh(isnan(delta_mesh)) = mean(delta_mesh(~isnan(delta_mesh)));
-q_mesh(isnan(q_mesh)) = mean(q_mesh(~isnan(q_mesh)));
-% remove_nan = or(~isnan(delta_mesh),~isnan(q_mesh));
-% delta_mesh = delta_mesh(remove_nan);
-% q_mesh = q_mesh(remove_nan);
-% x_mesh = x_mesh(remove_nan);
-% y_mesh = y_mesh(remove_nan);
+remove_nan = or(~isnan(delta_mesh),~isnan(q_mesh));
+delta_mesh = delta_mesh(remove_nan);
+q_mesh = q_mesh(remove_nan);
+x_mesh = x_mesh(remove_nan);
+y_mesh = y_mesh(remove_nan);
 
 % Calculate joule heating
 [e_x, e_y] = evaluateGradient(result,x_mesh,y_mesh);
@@ -164,45 +162,14 @@ while (abs(err) > tol)
     i = i + 1;
 end
 
-% Print final total iteration count, error, and standard deviation
-fprintf('After %g iterations \n', i);
-fprintf('The error is %g \n', mean(q_cal-q_mesh));
-fprintf('The standard deviation is %g \n', std(q_cal-q_mesh));
-
 figure(2)
-title('Converged Voltage');
+title('Initial Voltage');
 colorbar
 xlabel('x (m)')
 ylabel('y (m)')
 drawnow
 
-%% Plot desired heating
-figure(3)
-plot(q_des_c, [x_mesh,y_mesh], q_mesh)
-xlabel('x (m)');
-ylabel('y (m)');
-title('Heat Profile for Linear Thickness');
-colorbar;
-set(gca, 'FontSize', 14)
 
-%% Plot converged thickness
-figure(4)
-plot(delta_c,[x_mesh,y_mesh],delta_mesh);
-xlabel('x (m)');
-ylabel('y (m)');
-title('Predicted Thickness Profile');
-colorbar;
-set(gca, 'FontSize', 14)
-
-%% Plot calculated heating
-figure(5)
-q_cal_c = fit([x_mesh,y_mesh],q_cal,'linearinterp');
-plot(q_cal_c, [x_mesh,y_mesh], q_cal)
-xlabel('x (m)');
-ylabel('y (m)');
-title('Calculated Heating Profile for Solved Thickness');
-colorbar;
-set(gca, 'FontSize', 14)
 
 
 

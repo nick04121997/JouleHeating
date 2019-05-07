@@ -1,4 +1,5 @@
 %%%%
+% simple_square_prog.m
 % Script for running the MATLAB iterative method for thickness prediction
 % of a square geometry
 %%%%
@@ -17,14 +18,15 @@ global sigma V;
 sigma = 1E6;
 V = 115;
 
-% Create solution movie
+%% Create solution movie
+% Help visualize thickness updating and convergence
 v = VideoWriter('solution.avi');
 v.FrameRate = 2;
 open(v);
 
 %% Importing data and preforming interpolation
-% delta_data = initial thickness data
-% heat_data = desired heating data
+% delta_data: initial thickness data
+% heat_data: desired heating data
 delta_data = dlmread('thickness_init.csv',',',0,0);
 heat_data = dlmread('qj_test.csv',',',0,0);
 x = delta_data(:,1);
@@ -38,37 +40,46 @@ q_des_c = fit([x,y],q_des,'linearinterp');
 delta_c = fit([x,y],delta,'linearinterp');
 
 %% PDE model setup
+% Create pde model
 model = createpde();
 
-% Generates a square
+%% PDE model gemeotry
+% In this case, a square
 geom_descrip = [3;4;0;1;1;0;0;0;1;1;];
 dl = decsg(geom_descrip);
 geometryFromEdges(model,dl);
+figure(1);
 pdegplot(model,'EdgeLabels','on');
+title('Geometry')
+xlabel('x (m)')
+ylabel('y (m)')
+set(gca, 'FontSize', 14)
 
-% Apply boundary conditions
+%% Apply boundary conditions
 applyBoundaryCondition(model,'dirichlet','Edge',1,'r',-V);
 applyBoundaryCondition(model,'dirichlet','Edge',3,'r',V);
 applyBoundaryCondition(model,'neumann','Edge',[2,4],'g',0);
 
-% Apply PDE coefficient
+%% Apply PDE coefficient
 conductance_handle = @(location,state) delta_c(location.x,location.y);
 specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
 
-% Create mesh
+%% Create mesh
 generateMesh(model);
 
-% Solve the PDE
-figure(1);
+%% Solve the PDE
+figure(2);
 result = solvepde(model);
 voltage = result.NodalSolution;
+% Plot solution
+pdeplot(model,'XYData',voltage,'ZData',voltage);
+title('Initial Voltage');
+colorbar
+xlabel('x (m)')
+ylabel('y (m)')
 drawnow
 
-% Plot solution
-% pdeplot(model,'XYData',voltage,'ZData',voltage);
-% title('voltage');
-
-% Calculate joule heating
+%% Calculate joule heating
 [e_x, e_y] = evaluateGradient(result,x,y);
 q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
 err = abs(q_cal-q_des);
@@ -79,11 +90,13 @@ i = 0;
 
 while (err > tol)
     if mod(i,4) == 0
+        % Print iteration number and error for every major iteration
         fprintf('Iteration number %g \n', i/4+1)
         fprintf('The error is %g \n \n', err)
         
         % Plot for solution movie
-        figure(4);
+        fig = figure(5);
+        set(fig, 'Visible', 'off')
         plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
         set(gca, 'FontSize', 14);
         ytickformat('%.2f')
@@ -94,16 +107,6 @@ while (err > tol)
         hold on;
         frame = getframe(gcf);
         writeVideo(v,frame);
-        
-        figure(5);
-        plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
-        set(gca, 'FontSize', 14);
-        ytickformat('%.2f')
-        xlabel('y (m)');
-        ylabel('Thickness (m)');
-        title('Thickness Solution');
-        axis([0 1 0.8E-8 2.2E-8])
-        hold on;
     end
     
     % Resisty updating
@@ -132,11 +135,9 @@ while (err > tol)
     result = solvepde(model);
     
     % Plot solution
-    figure(1);
+    figure(2);
     voltage = result.NodalSolution;
     pdeplot(model,'XYData',voltage,'ZData',voltage);
-    title('voltage');
-    drawnow
     
     % Caculate joule heating 
     [e_x, e_y] = evaluateGradient(result,x,y);
@@ -150,20 +151,20 @@ while (err > tol)
     i = i + 1;
 end
 
+% Print final total iteration count, error, and standard deviation
 fprintf('After %g iterations \n', i);
 fprintf('The error is %g \n', mean(q_cal-q_des));
 fprintf('The standard deviation is %g \n', std(q_cal-q_des));
 
-% Plot converged thickness
+% Editing voltage plot
 figure(2)
-plot(delta_c,[x,y],delta);
-xlabel('x (m)');
-ylabel('y (m)');
-title('Predicted Thickness Profile');
-colorbar;
-set(gca, 'FontSize', 14)
+title('Converged Voltage');
+colorbar
+xlabel('x (m)')
+ylabel('y (m)')
+drawnow
 
-% Plot desired heating
+%% Plot desired heating
 figure(3)
 plot(q_des_c, [x,y], q_des)
 xlabel('x (m)');
@@ -172,9 +173,19 @@ title('Heat Profile for Linear Thickness');
 colorbar;
 set(gca, 'FontSize', 14)
 
-% Plot for solution movie
-figure(4);
-fig = plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
+%% Plot converged thickness
+figure(4)
+plot(delta_c,[x,y],delta);
+xlabel('x (m)');
+ylabel('y (m)');
+title('Predicted Thickness Profile');
+colorbar;
+set(gca, 'FontSize', 14)
+
+%% Plot for solution movie
+fig = figure(5);
+set(fig, 'Visible', 'on')
+plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
 set(gca, 'FontSize', 14);
 ytickformat('%.2f')
 xlabel('y (m)');
@@ -186,17 +197,3 @@ legend('1', '2', '3', '4', '5', '6', 'Location', 'southeast');
 frame = getframe(gcf);
 writeVideo(v,frame);
 close(v);
-
-figure(5);
-plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
-set(gca, 'FontSize', 14);
-ytickformat('%.2f')
-xlabel('y (m)');
-ylabel('Thickness (m)');
-title('Thickness Solution');
-axis([0 1 0.8E-8 2.2E-8])
-legend('1', '2', '3', '4', '5', '6', 'Location', 'southeast');
-hold on;
-
-
-

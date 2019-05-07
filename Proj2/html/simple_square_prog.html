@@ -1,0 +1,421 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>simple_square_prog</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-07"><meta name="DC.source" content="simple_square_prog.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Clearing MATLAB workspace and command window, and closing all figures</a></li><li><a href="#3">System parameters</a></li><li><a href="#4">Create solution movie</a></li><li><a href="#5">Importing data and preforming interpolation</a></li><li><a href="#6">PDE model setup</a></li><li><a href="#7">PDE model gemeotry</a></li><li><a href="#8">Apply boundary conditions</a></li><li><a href="#9">Apply PDE coefficient</a></li><li><a href="#10">Create mesh</a></li><li><a href="#11">Solve the PDE</a></li><li><a href="#12">Calculate joule heating</a></li><li><a href="#13">Begin iteration</a></li><li><a href="#14">Plot desired heating</a></li><li><a href="#15">Plot converged thickness</a></li><li><a href="#16">Plot for solution movie</a></li></ul></div><pre class="codeinput"><span class="comment">%%%%</span>
+<span class="comment">% simple_square_prog.m</span>
+<span class="comment">% Script for running the MATLAB iterative method for thickness prediction</span>
+<span class="comment">% of a square geometry</span>
+<span class="comment">%%%%</span>
+</pre><h2 id="2">Clearing MATLAB workspace and command window, and closing all figures</h2><pre class="codeinput">clear;
+close <span class="string">all</span>;
+clc;
+</pre><h2 id="3">System parameters</h2><p>tol = error tolerance for terminating iteration sigma = conductivity of material V = voltage applied to the busbars</p><pre class="codeinput">tol = 0.5;
+<span class="keyword">global</span> sigma V;
+sigma = 1E6;
+V = 115;
+</pre><h2 id="4">Create solution movie</h2><p>Help visualize thickness updating and convergence</p><pre class="codeinput">v = VideoWriter(<span class="string">'solution.avi'</span>);
+v.FrameRate = 2;
+open(v);
+</pre><h2 id="5">Importing data and preforming interpolation</h2><p>delta_data: initial thickness data heat_data: desired heating data</p><pre class="codeinput">delta_data = dlmread(<span class="string">'thickness_init.csv'</span>,<span class="string">','</span>,0,0);
+heat_data = dlmread(<span class="string">'qj_test.csv'</span>,<span class="string">','</span>,0,0);
+x = delta_data(:,1);
+y = delta_data(:,2);
+delta = delta_data(:,3);
+q_des = heat_data(:,3);
+
+<span class="comment">% Continuous function of desired q</span>
+q_des_c = fit([x,y],q_des,<span class="string">'linearinterp'</span>);
+<span class="comment">% Continuous function of delta</span>
+delta_c = fit([x,y],delta,<span class="string">'linearinterp'</span>);
+</pre><h2 id="6">PDE model setup</h2><p>Create pde model</p><pre class="codeinput">model = createpde();
+</pre><h2 id="7">PDE model gemeotry</h2><p>In this case, a square</p><pre class="codeinput">geom_descrip = [3;4;0;1;1;0;0;0;1;1;];
+dl = decsg(geom_descrip);
+geometryFromEdges(model,dl);
+figure(1);
+pdegplot(model,<span class="string">'EdgeLabels'</span>,<span class="string">'on'</span>);
+</pre><img vspace="5" hspace="5" src="simple_square_prog_01.png" style="width:560px;height:420px;" alt=""> <h2 id="8">Apply boundary conditions</h2><pre class="codeinput">applyBoundaryCondition(model,<span class="string">'dirichlet'</span>,<span class="string">'Edge'</span>,1,<span class="string">'r'</span>,-V);
+applyBoundaryCondition(model,<span class="string">'dirichlet'</span>,<span class="string">'Edge'</span>,3,<span class="string">'r'</span>,V);
+applyBoundaryCondition(model,<span class="string">'neumann'</span>,<span class="string">'Edge'</span>,[2,4],<span class="string">'g'</span>,0);
+</pre><h2 id="9">Apply PDE coefficient</h2><pre class="codeinput">conductance_handle = @(location,state) delta_c(location.x,location.y);
+specifyCoefficients(model,<span class="string">'m'</span>,0,<span class="string">'d'</span>,0,<span class="string">'c'</span>,conductance_handle,<span class="string">'a'</span>,0,<span class="string">'f'</span>,0,<span class="string">'face'</span>,1);
+</pre><h2 id="10">Create mesh</h2><pre class="codeinput">generateMesh(model);
+</pre><h2 id="11">Solve the PDE</h2><pre class="codeinput">figure(2);
+result = solvepde(model);
+voltage = result.NodalSolution;
+<span class="comment">% Plot solution</span>
+pdeplot(model,<span class="string">'XYData'</span>,voltage,<span class="string">'ZData'</span>,voltage);
+title(<span class="string">'voltage'</span>);
+drawnow
+</pre><img vspace="5" hspace="5" src="simple_square_prog_02.png" style="width:560px;height:420px;" alt=""> <h2 id="12">Calculate joule heating</h2><pre class="codeinput">[e_x, e_y] = evaluateGradient(result,x,y);
+q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
+err = abs(q_cal-q_des);
+err = mean(err);
+</pre><h2 id="13">Begin iteration</h2><pre class="codeinput">i = 0;
+
+<span class="keyword">while</span> (err &gt; tol)
+    <span class="keyword">if</span> mod(i,4) == 0
+        <span class="comment">% Print iteration number and error for every major iteration</span>
+        fprintf(<span class="string">'Iteration number %g \n'</span>, i/4+1)
+        fprintf(<span class="string">'The error is %g \n \n'</span>, err)
+
+        <span class="comment">% Plot for solution movie</span>
+        figure(5);
+        plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), <span class="string">'LineWidth'</span>, 2);
+        set(gca, <span class="string">'FontSize'</span>, 14);
+        ytickformat(<span class="string">'%.2f'</span>)
+        xlabel(<span class="string">'y (m)'</span>);
+        ylabel(<span class="string">'Thickness (m)'</span>);
+        title(<span class="string">'Thickness Solution'</span>);
+        axis([0 1 0.8E-8 2.2E-8])
+        hold <span class="string">on</span>;
+        frame = getframe(gcf);
+        writeVideo(v,frame);
+    <span class="keyword">end</span>
+
+    <span class="comment">% Resisty updating</span>
+    <span class="keyword">switch</span> (mod(i,4))
+        <span class="keyword">case</span> 0
+            delta = (q_cal./q_des).*delta;
+        <span class="keyword">case</span> 1
+            delta = (q_des./q_cal).*delta;
+        <span class="keyword">case</span> 2
+            delta = ((q_cal./q_des).^2).*delta;
+        <span class="keyword">otherwise</span>
+            delta = ((q_des./q_cal).^2).*delta;
+    <span class="keyword">end</span>
+
+    <span class="comment">% Continuous fit for thickness</span>
+    delta_c = fit([x,y],delta,<span class="string">'linearinterp'</span>);
+
+    <span class="comment">% Apply PDE coefficients</span>
+    conductance_handle = @(location,state) delta_c(location.x,location.y);
+    specifyCoefficients(model,<span class="string">'m'</span>,0,<span class="string">'d'</span>,0,<span class="string">'c'</span>,conductance_handle,<span class="string">'a'</span>,0,<span class="string">'f'</span>,0,<span class="string">'face'</span>,1);
+
+    <span class="comment">% Create mesh</span>
+    generateMesh(model);
+
+    <span class="comment">% Solve the PDE</span>
+    result = solvepde(model);
+
+    <span class="comment">% Plot solution</span>
+    figure(2);
+    voltage = result.NodalSolution;
+    pdeplot(model,<span class="string">'XYData'</span>,voltage,<span class="string">'ZData'</span>,voltage);
+    title(<span class="string">'voltage'</span>);
+    drawnow
+
+    <span class="comment">% Caculate joule heating</span>
+    [e_x, e_y] = evaluateGradient(result,x,y);
+    q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
+
+    <span class="comment">% Calcuate error</span>
+    err = abs(q_cal-q_des);
+    err = mean(err);
+
+    <span class="comment">% Update iteration count</span>
+    i = i + 1;
+<span class="keyword">end</span>
+
+<span class="comment">% Print final total iteration count, error, and standard deviation</span>
+fprintf(<span class="string">'After %g iterations \n'</span>, i);
+fprintf(<span class="string">'The error is %g \n'</span>, mean(q_cal-q_des));
+fprintf(<span class="string">'The standard deviation is %g \n'</span>, std(q_cal-q_des));
+</pre><pre class="codeoutput">Iteration number 1 
+The error is 200.985 
+ 
+Iteration number 2 
+The error is 22.7776 
+ 
+Iteration number 3 
+The error is 5.44485 
+ 
+Iteration number 4 
+The error is 2.4514 
+ 
+Iteration number 5 
+The error is 1.34341 
+ 
+After 17 iterations 
+The error is 0.00403459 
+The standard deviation is 0.633204 
+</pre><img vspace="5" hspace="5" src="simple_square_prog_03.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="simple_square_prog_04.png" style="width:560px;height:420px;" alt=""> <h2 id="14">Plot desired heating</h2><pre class="codeinput">figure(3)
+plot(q_des_c, [x,y], q_des)
+xlabel(<span class="string">'x (m)'</span>);
+ylabel(<span class="string">'y (m)'</span>);
+title(<span class="string">'Heat Profile for Linear Thickness'</span>);
+colorbar;
+set(gca, <span class="string">'FontSize'</span>, 14)
+</pre><img vspace="5" hspace="5" src="simple_square_prog_05.png" style="width:560px;height:420px;" alt=""> <h2 id="15">Plot converged thickness</h2><pre class="codeinput">figure(4)
+plot(delta_c,[x,y],delta);
+xlabel(<span class="string">'x (m)'</span>);
+ylabel(<span class="string">'y (m)'</span>);
+title(<span class="string">'Predicted Thickness Profile'</span>);
+colorbar;
+set(gca, <span class="string">'FontSize'</span>, 14)
+</pre><img vspace="5" hspace="5" src="simple_square_prog_06.png" style="width:560px;height:420px;" alt=""> <h2 id="16">Plot for solution movie</h2><pre class="codeinput">figure(5);
+fig = plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), <span class="string">'LineWidth'</span>, 2);
+set(gca, <span class="string">'FontSize'</span>, 14);
+ytickformat(<span class="string">'%.2f'</span>)
+xlabel(<span class="string">'y (m)'</span>);
+ylabel(<span class="string">'Thickness (m)'</span>);
+title(<span class="string">'Thickness Solution'</span>);
+axis([0 1 0.8E-8 2.2E-8])
+hold <span class="string">on</span>;
+legend(<span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'Location'</span>, <span class="string">'southeast'</span>);
+frame = getframe(gcf);
+writeVideo(v,frame);
+close(v);
+</pre><img vspace="5" hspace="5" src="simple_square_prog_07.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%%%
+% simple_square_prog.m
+% Script for running the MATLAB iterative method for thickness prediction
+% of a square geometry
+%%%%
+
+%% Clearing MATLAB workspace and command window, and closing all figures
+clear;
+close all;
+clc;
+
+%% System parameters
+% tol = error tolerance for terminating iteration
+% sigma = conductivity of material
+% V = voltage applied to the busbars 
+tol = 0.5;
+global sigma V;
+sigma = 1E6;
+V = 115;
+
+%% Create solution movie
+% Help visualize thickness updating and convergence
+v = VideoWriter('solution.avi');
+v.FrameRate = 2;
+open(v);
+
+%% Importing data and preforming interpolation
+% delta_data: initial thickness data
+% heat_data: desired heating data
+delta_data = dlmread('thickness_init.csv',',',0,0);
+heat_data = dlmread('qj_test.csv',',',0,0);
+x = delta_data(:,1);
+y = delta_data(:,2);
+delta = delta_data(:,3);
+q_des = heat_data(:,3);
+
+% Continuous function of desired q
+q_des_c = fit([x,y],q_des,'linearinterp');
+% Continuous function of delta
+delta_c = fit([x,y],delta,'linearinterp');
+
+%% PDE model setup
+% Create pde model
+model = createpde();
+
+%% PDE model gemeotry
+% In this case, a square
+geom_descrip = [3;4;0;1;1;0;0;0;1;1;];
+dl = decsg(geom_descrip);
+geometryFromEdges(model,dl);
+figure(1);
+pdegplot(model,'EdgeLabels','on');
+
+%% Apply boundary conditions
+applyBoundaryCondition(model,'dirichlet','Edge',1,'r',-V);
+applyBoundaryCondition(model,'dirichlet','Edge',3,'r',V);
+applyBoundaryCondition(model,'neumann','Edge',[2,4],'g',0);
+
+%% Apply PDE coefficient
+conductance_handle = @(location,state) delta_c(location.x,location.y);
+specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
+
+%% Create mesh
+generateMesh(model);
+
+%% Solve the PDE
+figure(2);
+result = solvepde(model);
+voltage = result.NodalSolution;
+% Plot solution
+pdeplot(model,'XYData',voltage,'ZData',voltage);
+title('voltage');
+drawnow
+
+%% Calculate joule heating
+[e_x, e_y] = evaluateGradient(result,x,y);
+q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
+err = abs(q_cal-q_des);
+err = mean(err);
+
+%% Begin iteration
+i = 0;
+
+while (err > tol)
+    if mod(i,4) == 0
+        % Print iteration number and error for every major iteration
+        fprintf('Iteration number %g \n', i/4+1)
+        fprintf('The error is %g \n \n', err)
+        
+        % Plot for solution movie
+        figure(5);
+        plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
+        set(gca, 'FontSize', 14);
+        ytickformat('%.2f')
+        xlabel('y (m)');
+        ylabel('Thickness (m)');
+        title('Thickness Solution');
+        axis([0 1 0.8E-8 2.2E-8])
+        hold on;
+        frame = getframe(gcf);
+        writeVideo(v,frame);
+    end
+    
+    % Resisty updating
+    switch (mod(i,4))
+        case 0
+            delta = (q_cal./q_des).*delta;
+        case 1
+            delta = (q_des./q_cal).*delta;
+        case 2
+            delta = ((q_cal./q_des).^2).*delta;
+        otherwise
+            delta = ((q_des./q_cal).^2).*delta;
+    end
+    
+    % Continuous fit for thickness
+    delta_c = fit([x,y],delta,'linearinterp');
+    
+    % Apply PDE coefficients
+    conductance_handle = @(location,state) delta_c(location.x,location.y);
+    specifyCoefficients(model,'m',0,'d',0,'c',conductance_handle,'a',0,'f',0,'face',1);
+    
+    % Create mesh 
+    generateMesh(model);
+    
+    % Solve the PDE
+    result = solvepde(model);
+    
+    % Plot solution
+    figure(2);
+    voltage = result.NodalSolution;
+    pdeplot(model,'XYData',voltage,'ZData',voltage);
+    title('voltage');
+    drawnow
+    
+    % Caculate joule heating 
+    [e_x, e_y] = evaluateGradient(result,x,y);
+    q_cal = delta.*(e_x.^2+e_y.^2)*sigma;
+    
+    % Calcuate error
+    err = abs(q_cal-q_des);
+    err = mean(err);
+    
+    % Update iteration count
+    i = i + 1;
+end
+
+% Print final total iteration count, error, and standard deviation
+fprintf('After %g iterations \n', i);
+fprintf('The error is %g \n', mean(q_cal-q_des));
+fprintf('The standard deviation is %g \n', std(q_cal-q_des));
+
+%% Plot desired heating
+figure(3)
+plot(q_des_c, [x,y], q_des)
+xlabel('x (m)');
+ylabel('y (m)');
+title('Heat Profile for Linear Thickness');
+colorbar;
+set(gca, 'FontSize', 14)
+
+%% Plot converged thickness
+figure(4)
+plot(delta_c,[x,y],delta);
+xlabel('x (m)');
+ylabel('y (m)');
+title('Predicted Thickness Profile');
+colorbar;
+set(gca, 'FontSize', 14)
+
+%% Plot for solution movie
+figure(5);
+fig = plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
+set(gca, 'FontSize', 14);
+ytickformat('%.2f')
+xlabel('y (m)');
+ylabel('Thickness (m)');
+title('Thickness Solution');
+axis([0 1 0.8E-8 2.2E-8])
+hold on;
+legend('1', '2', '3', '4', '5', '6', 'Location', 'southeast');
+frame = getframe(gcf);
+writeVideo(v,frame);
+close(v);
+
+##### SOURCE END #####
+--></body></html>
