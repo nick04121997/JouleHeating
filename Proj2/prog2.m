@@ -19,7 +19,7 @@ V = 115;
 
 % Create solution movie
 v = VideoWriter('solution.avi');
-v.FrameRate = 1.5;
+v.FrameRate = 2;
 open(v);
 
 %% Importing data and preforming interpolation
@@ -91,6 +91,7 @@ while (err > tol)
         ylabel('Thickness (m)');
         title('Thickness Solution');
         axis([0 1 0.8E-8 2.2E-8])
+        hold on;
         frame = getframe(gcf);
         writeVideo(v,frame);
         
@@ -180,6 +181,8 @@ xlabel('y (m)');
 ylabel('Thickness (m)');
 title('Thickness Solution');
 axis([0 1 0.8E-8 2.2E-8])
+hold on;
+legend('1', '2', '3', '4', '5', '6', 'Location', 'southeast');
 frame = getframe(gcf);
 writeVideo(v,frame);
 close(v);
@@ -192,6 +195,7 @@ xlabel('y (m)');
 ylabel('Thickness (m)');
 title('Thickness Solution');
 axis([0 1 0.8E-8 2.2E-8])
+legend('1', '2', '3', '4', '5', '6', 'Location', 'southeast');
 hold on;
 
 
