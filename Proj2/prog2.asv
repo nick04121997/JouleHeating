@@ -17,9 +17,8 @@ global sigma V;
 sigma = 1E6;
 V = 115;
 
-% Create solution movie
 v = VideoWriter('solution.avi');
-v.FrameRate = 1.5;
+v.FrameRate = 2;
 open(v);
 
 %% Importing data and preforming interpolation
@@ -82,15 +81,13 @@ while (err > tol)
         fprintf('Iteration number %g \n', i/4+1)
         fprintf('The error is %g \n \n', err)
         
-        % Plot for solution movie
         figure(4);
         plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
         set(gca, 'FontSize', 14);
-        ytickformat('%.2f')
+        ytickformat('%.1f')
         xlabel('y (m)');
         ylabel('Thickness (m)');
         title('Thickness Solution');
-        axis([0 1 0.8E-8 2.2E-8])
         frame = getframe(gcf);
         writeVideo(v,frame);
     end
@@ -161,17 +158,16 @@ title('Heat Profile for Linear Thickness');
 colorbar;
 set(gca, 'FontSize', 14)
 
-% Plot for solution movie
+
 figure(4);
 fig = plot(0:0.1:1, delta_c(0.4*ones(1,length(0:0.1:1)), 0:0.1:1), 'LineWidth', 2);
 set(gca, 'FontSize', 14);
-ytickformat('%.2f')
 xlabel('y (m)');
 ylabel('Thickness (m)');
 title('Thickness Solution');
-axis([0 1 0.8E-8 2.2E-8])
 frame = getframe(gcf);
 writeVideo(v,frame);
+
 close(v);
 
 
